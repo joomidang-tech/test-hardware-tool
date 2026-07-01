@@ -14,18 +14,27 @@
 즉 USB는 "통신선"이다. 이 툴로 명령이 나가도 펌프에 **별도 전원**이 없으면
 물리적으로 움직이지 않는다. 신호만 확인하려면 상태조회(`?`) 응답으로 통신 성립을 검증할 수 있다.
 
-## 실행 — 원샷 (라즈베리파이 4B / 64bit)
+## 🍓 원클릭 설치 (라즈베리파이 4B / 64bit) — 한 줄
 
-이 `pump_web_test/` 폴더를 Pi로 옮긴 뒤(git clone · scp · USB 아무거나) **명령 하나**면 끝:
+라즈베리파이 터미널에 이 **한 줄**이면 다운로드+설치+**부팅 자동시작**+실행까지 끝:
 
 ```bash
-cd pump_web_test
-chmod +x run.sh
-./run.sh
+curl -fsSL https://raw.githubusercontent.com/joomidang-tech/test-hardware-tool/main/bootstrap.sh | bash
 ```
 
-`run.sh` 가 알아서: **가상환경(venv) 생성 → flask·pyserial 설치 → 시리얼 권한 확인 → 앱 실행**.
-(최신 Pi OS Bookworm의 시스템 pip 차단(PEP 668)을 venv로 자동 우회 — 별도 설정 불필요.)
+이후 Pi를 켤 때마다 **자동으로 시작**됩니다(systemd, 죽으면 자동 재시작). 접속: http://localhost:8000
+
+- 부팅 자동시작 없이 1회만 실행: `... | bash -s -- --no-boot`
+- 로그: `sudo journalctl -u test-hardware-tool -f` · 중지: `sudo systemctl stop test-hardware-tool`
+
+### 수동 실행 (개발용)
+
+폴더를 받은 뒤 다음 중 하나:
+```bash
+python3 start.py     # 파이썬 단독: venv 설치+실행 (bash 불필요)
+./run.sh             # 셸: venv 설치+실행
+```
+(둘 다 최신 Pi OS Bookworm의 pip 차단(PEP 668)을 venv로 자동 우회.)
 
 실행되면 브라우저에서 접속:
 - **Pi 자체 화면**: http://localhost:8000
