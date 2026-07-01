@@ -23,10 +23,18 @@ NO_BOOT=0
 
 echo "▶ 시린지펌프 테스트 툴 — 원클릭 설치"
 
-# 0) 필수 패키지
-if ! command -v git >/dev/null 2>&1 || ! command -v python3 >/dev/null 2>&1; then
-  echo "▶ git·python3 설치..."
-  sudo apt-get update -qq && sudo apt-get install -y -qq git python3 python3-venv python3-pip
+# 0) 필수 패키지 (git·python3·한글폰트·이모지폰트)
+NEED=""
+command -v git >/dev/null 2>&1 || NEED="$NEED git"
+command -v python3 >/dev/null 2>&1 || NEED="$NEED python3 python3-venv python3-pip"
+# 브라우저에서 한국어/아이콘이 깨지지 않도록 CJK·이모지 폰트 보장
+fc-list 2>/dev/null | grep -qiE "noto.*cjk|nanum" || NEED="$NEED fonts-noto-cjk"
+fc-list 2>/dev/null | grep -qiE "noto.*emoji"      || NEED="$NEED fonts-noto-color-emoji"
+if [ -n "$NEED" ]; then
+  echo "▶ 패키지 설치:$NEED"
+  sudo apt-get update -qq
+  sudo apt-get install -y -qq $NEED
+  sudo fc-cache -f >/dev/null 2>&1 || true   # 폰트 캐시 갱신
 fi
 
 # 1) 다운로드 (public → 인증 불필요)
